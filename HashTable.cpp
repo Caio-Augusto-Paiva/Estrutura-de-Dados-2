@@ -6,10 +6,28 @@
 #include <algorithm>
 #include <chrono>
 #include <cmath>
+#include <fstream>
 
 using namespace std;
 
 int contadorColisoes = 0;
+
+// Implementação da função import que estava faltando
+GameReview* import(int n) {
+    GameReview* reviews = new GameReview[n];
+    ifstream bin("reviews.bin", ios::binary);
+    if (!bin.is_open()) {
+        cerr << "Erro ao abrir reviews.bin" << endl;
+        return nullptr;
+    }
+    
+    for (int i = 0; i < n; i++) {
+        bin.read(reinterpret_cast<char*>(&reviews[i]), sizeof(GameReview));
+        if (!bin) break;
+    }
+    bin.close();
+    return reviews;
+}
 
 int hashFunction1(int key) {
     return key % TAM_TABELA;

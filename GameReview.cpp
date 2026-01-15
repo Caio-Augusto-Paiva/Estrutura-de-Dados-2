@@ -24,7 +24,7 @@ void GameReview::print() const {
 
 // Retorna registro lido do disco no offset
 GameReview lerRegistro(long long offset) {
-    GameReview gr;
+    GameReview gr = {}; // Inicializa com zeros
     ifstream entrada(g_caminhoBinario, ios::binary);
     if (!entrada) {
         cerr << "Erro ao abrir arquivo para leitura no offset " << offset << endl;
