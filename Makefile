@@ -3,11 +3,11 @@ CFLAGS = -Wall -std=c++11 -g
 
 all: programa
 
-programa: Main.o GameReview.o HashTable.o ArvoreB.o Compressor.o
-	$(CC) $(CFLAGS) -o programa Main.o GameReview.o HashTable.o ArvoreB.o Compressor.o
+programa: main.o GameReview.o HashTable.o ArvoreB.o Compressor.o
+	$(CC) $(CFLAGS) -o programa main.o GameReview.o HashTable.o ArvoreB.o Compressor.o
 
-Main.o: Main.cpp
-	$(CC) $(CFLAGS) -c Main.cpp
+main.o: main.cpp
+	$(CC) $(CFLAGS) -c main.cpp
 
 GameReview.o: GameReview.cpp GameReview.h
 	$(CC) $(CFLAGS) -c GameReview.cpp

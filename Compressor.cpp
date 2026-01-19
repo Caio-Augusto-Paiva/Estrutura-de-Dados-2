@@ -47,19 +47,39 @@ void Compressor::comprimeArquivo(int metodo, int nRegistros) {
 
     if (metodo == 1) { // Huffman
         string res = runHuffmanCompress(dadosCompletos);
-        out << res; // Salvando string de bits como texto '0' e '1' para simplificar visualizacao
-        cout << "Huffman: Texto original (" << dadosCompletos.size() << " bytes) -> " 
-             << res.size() << " bits (aprox " << res.size()/8 << " bytes)" << endl;
+        out << res; // Salvando string de bits como texto '0' e '1'
+        
+        double originalBytes = (double)dadosCompletos.size();
+        double compressedBytes = res.size() / 8.0; // Bits para bytes
+        double taxa = (originalBytes > 0) ? (compressedBytes / originalBytes) * 100.0 : 0.0;
+
+        cout << "Huffman: Original: " << originalBytes << " bytes | Comprimido: " << compressedBytes 
+             << " bytes | Taxa: " << taxa << "%" << endl;
     } 
     else if (metodo == 2) { // LZ77
         string res = runLZ77Compress(dadosCompletos);
         out << res;
-        cout << "LZ77 gerado." << endl;
+
+        double originalBytes = (double)dadosCompletos.size();
+        double compressedBytes = (double)res.size();
+        double taxa = (originalBytes > 0) ? (compressedBytes / originalBytes) * 100.0 : 0.0;
+
+        cout << "LZ77: Original: " << originalBytes << " bytes | Comprimido: " << compressedBytes 
+             << " bytes | Taxa: " << taxa << "%" << endl;
     }
     else if (metodo == 3) { // LZW
         vector<int> res = runLZWCompress(dadosCompletos);
-        for(int x : res) out << x << " ";
-        cout << "LZW: " << dadosCompletos.size() << " chars -> " << res.size() << " codigos." << endl;
+        long long compressedSize = 0;
+        for(int x : res) {
+            out << x << " ";
+            compressedSize += to_string(x).length() + 1;
+        }
+
+        double originalBytes = (double)dadosCompletos.size();
+        double taxa = (originalBytes > 0) ? ((double)compressedSize / originalBytes) * 100.0 : 0.0;
+        
+        cout << "LZW: Original: " << originalBytes << " bytes | Comprimido: " << compressedSize 
+             << " bytes | Taxa: " << taxa << "%" << endl;
     }
     out.close();
 }
