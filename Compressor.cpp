@@ -10,7 +10,7 @@
 
 using namespace std;
 
-// --- ESTRUTURAS HUFFMAN ---
+//ESTRUTURAS HUFFMAN 
 struct NoHuff {
     char ch;
     int freq;
@@ -30,10 +30,10 @@ void geraCodigos(NoHuff* raiz, string str, map<char, string>& huffmanCode) {
     geraCodigos(raiz->dir, str + "1", huffmanCode);
 }
 
-// --- IMPLEMENTACAO COMPRESSOR ---
+// MPLEMENTACAO COMPRESSOR 
 
 void Compressor::comprimeArquivo(int metodo, int nRegistros) {
-    // 1. Ler N registros e concatenar strings
+    // Ler N registros e concatenar strings
     ifstream bin("reviews.bin", ios::binary);
     string dadosCompletos = "";
     GameReview gr;
@@ -47,10 +47,34 @@ void Compressor::comprimeArquivo(int metodo, int nRegistros) {
 
     if (metodo == 1) { // Huffman
         string res = runHuffmanCompress(dadosCompletos);
-        out << res; // Salvando string de bits como texto '0' e '1'
+        
+        // CONVERSAO DE STRING "0"/"1" PARA BITS REAIS
+        vector<unsigned char> byteBuffer;
+        unsigned char buffer = 0;
+        int bitCount = 0;
+
+        for(char c : res) {
+            buffer = buffer << 1; 
+            if(c == '1') buffer = buffer | 1;
+            bitCount++;
+
+            if(bitCount == 8) {
+                byteBuffer.push_back(buffer);
+                buffer = 0;
+                bitCount = 0;
+            }
+        }
+        // Adiciona padding se sobrarem bits
+        if (bitCount > 0) {
+            buffer = buffer << (8 - bitCount);
+            byteBuffer.push_back(buffer);
+        }
+
+        // Escreve os bytes reais no arquivo
+        out.write(reinterpret_cast<const char*>(byteBuffer.data()), byteBuffer.size());
         
         double originalBytes = (double)dadosCompletos.size();
-        double compressedBytes = res.size() / 8.0; // Bits para bytes
+        double compressedBytes = (double)byteBuffer.size();
         double taxa = (originalBytes > 0) ? (compressedBytes / originalBytes) * 100.0 : 0.0;
 
         cout << "Huffman: Original: " << originalBytes << " bytes | Comprimido: " << compressedBytes 
@@ -58,21 +82,25 @@ void Compressor::comprimeArquivo(int metodo, int nRegistros) {
     } 
     else if (metodo == 2) { // LZ77
         string res = runLZ77Compress(dadosCompletos);
-        out << res;
+        out.write(res.data(), res.size()); // Binario simples (distancia, tamanho, char)
 
         double originalBytes = (double)dadosCompletos.size();
         double compressedBytes = (double)res.size();
         double taxa = (originalBytes > 0) ? (compressedBytes / originalBytes) * 100.0 : 0.0;
 
-        cout << "LZ77: Original: " << originalBytes << " bytes | Comprimido: " << compressedBytes 
+        cout << "LZ77(Otimizado): Original: " << originalBytes << " bytes | Comprimido: " << compressedBytes 
              << " bytes | Taxa: " << taxa << "%" << endl;
     }
     else if (metodo == 3) { // LZW
         vector<int> res = runLZWCompress(dadosCompletos);
         long long compressedSize = 0;
+        
+        // Escreve inteiros como binario de 2 bytes (unsigned short)
+        // Nota: Se o dicionario crescer muito (>65535), precisaria de 4 bytes ou tamanho variavel.
         for(int x : res) {
-            out << x << " ";
-            compressedSize += to_string(x).length() + 1;
+            unsigned short code = (unsigned short)x; 
+            out.write(reinterpret_cast<char*>(&code), sizeof(unsigned short));
+            compressedSize += sizeof(unsigned short);
         }
 
         double originalBytes = (double)dadosCompletos.size();
@@ -86,13 +114,11 @@ void Compressor::comprimeArquivo(int metodo, int nRegistros) {
 
 void Compressor::descomprimeArquivo(int metodo) {
     // Implementação simplificada: foca na lógica de descompressão
-    // Em um sistema real, precisariamos salvar a arvore de Huffman ou Dicionario no arquivo.
     cout << "Funcionalidade de descompressão requer metadados salvos (ex: Arvore Huffman). "
          << "Executando lógica In-Memory para demonstracao: " << endl;
-    // Aqui repetiriamos a logica inversa usando o input do arquivo reviewsComp.bin
 }
 
-// --- LOGICA HUFFMAN ---
+//LOGICA HUFFMAN
 string Compressor::runHuffmanCompress(const string& text) {
     map<char, int> freq;
     for (char c : text) freq[c]++;
@@ -117,20 +143,33 @@ string Compressor::runHuffmanCompress(const string& text) {
     return strCodificada;
 }
 
-// --- LOGICA LZ77 (Simplificada) ---
+// LOGICA LZ77 
 string Compressor::runLZ77Compress(const string& input) {
-    // Janela de busca: 4096, Buffer visualizacao: 16
-    int windowSize = 100; // Pequeno para teste
-    int bufferSize = 20;
     string output = "";
-    int cursor = 0;
+    size_t cursor = 0;
+    const int windowSize = 255; // Janela de 1 byte
+    const int bufferSize = 255; // Buffer de 1 byte
+
+    // Buffer para 8 tokens e seu byte de controle
+    vector<unsigned char> tokenBuffer;
+    unsigned char controlByte = 0;
+    int controlCount = 0;
+
+    auto flushBuffer = [&]() {
+        output += (char)controlByte;
+        for (unsigned char c : tokenBuffer) output += (char)c;
+        tokenBuffer.clear();
+        controlByte = 0;
+        controlCount = 0;
+    };
 
     while (cursor < input.length()) {
         int bestLen = 0;
         int bestDist = 0;
-        int startSearch = (cursor - windowSize < 0) ? 0 : cursor - windowSize;
+        size_t startSearch = (cursor < (size_t)windowSize) ? 0 : cursor - windowSize;
 
-        for (int i = startSearch; i < cursor; i++) {
+        // Busca match
+        for (size_t i = startSearch; i < cursor; i++) {
             int len = 0;
             while (len < bufferSize && (i + len) < cursor && (cursor + len) < input.length() 
                    && input[i + len] == input[cursor + len]) {
@@ -138,19 +177,42 @@ string Compressor::runLZ77Compress(const string& input) {
             }
             if (len > bestLen) {
                 bestLen = len;
-                bestDist = cursor - i;
+                bestDist = (int)(cursor - i);
             }
         }
 
-        char nextChar = (cursor + bestLen < input.length()) ? input[cursor + bestLen] : '\0';
-        
-        output += "<" + to_string(bestDist) + "," + to_string(bestLen) + "," + nextChar + ">";
-        cursor += bestLen + 1;
+        // So comprime se economizar espaco (Reference=2 bytes vs Literal=1 byte)
+        // Overhead do flag bit eh igual pra ambos.
+        // Se len >= 3, substituimos 3+ bytes por 2 bytes -> Lucro.
+        if (bestLen >= 3) {
+            // Bit 1 = Referencia
+            controlByte |= (1 << (7 - controlCount));
+            tokenBuffer.push_back((unsigned char)bestDist);
+            tokenBuffer.push_back((unsigned char)bestLen);
+            cursor += bestLen;
+        } else {
+            // Bit 0 = Literal
+            tokenBuffer.push_back((unsigned char)input[cursor]);
+            cursor++;
+        }
+
+        controlCount++;
+
+        // A cada 8 itens, escreve no output
+        if (controlCount == 8) {
+            flushBuffer();
+        }
     }
+
+    // Escreve o restante
+    if (controlCount > 0) {
+        flushBuffer();
+    }
+    
     return output;
 }
 
-// --- LOGICA LZW ---
+// LOGICA LZW 
 vector<int> Compressor::runLZWCompress(const string& input) {
     map<string, int> dictionary;
     for (int i = 0; i < 256; i++) dictionary[string(1, i)] = i;

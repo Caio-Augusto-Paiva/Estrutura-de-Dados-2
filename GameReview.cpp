@@ -43,8 +43,7 @@ long long getTamanhoArquivo() {
 }
 
 void createBinary(const string& pathCsv) {
-    // Mantive sua lógica original, apenas removi a verificação redundante de existência
-    // para forçar a criação se necessário ou mude conforme preferir.
+    // para forçar a criação 
     string binPath = "reviews.bin"; 
     
     ifstream entrada(pathCsv);
@@ -55,7 +54,7 @@ void createBinary(const string& pathCsv) {
 
     ofstream saida(binPath, ios::binary);
     string linha;
-    getline(entrada, linha); // Header
+    getline(entrada, linha); 
 
     cout << "Gerando binario..." << endl;
     while (getline(entrada, linha)) {
@@ -79,7 +78,7 @@ void createBinary(const string& pathCsv) {
             gr.idJogo = stoi(c2);
             gr.idAutor = stoll(c3);
             gr.notaPonderada = stof(c4);
-            gr.offset = 0; // Placeholder, no disco não salvamos isso, é calculado na leitura
+            gr.offset = 0; 
 
             saida.write(reinterpret_cast<char*>(&gr), sizeof(GameReview));
         } catch (...) { continue; }

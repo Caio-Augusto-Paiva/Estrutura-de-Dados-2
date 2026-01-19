@@ -1,5 +1,5 @@
 ﻿Relatorio de Testes de Compressao
-Data: 01/19/2026 15:28:47
+Data: 01/19/2026 18:47:18
 N Registros: 1000
 --------------------------------------------------
 --- Testando Huffman ---
@@ -9,14 +9,14 @@ Execucao 3: Quantos registros comprimir? Metodo (1-Huffman, 2-LZ77, 3-LZW): Huff
 MEDIA (Huffman): 43.6072 %
 --------------------------------------------------
 --- Testando LZ77 ---
-Execucao 1: Quantos registros comprimir? Metodo (1-Huffman, 2-LZ77, 3-LZW): LZ77: Original: 25654 bytes | Comprimido: 48486 bytes | Taxa: 189%
-Execucao 2: Quantos registros comprimir? Metodo (1-Huffman, 2-LZ77, 3-LZW): LZ77: Original: 25654 bytes | Comprimido: 48486 bytes | Taxa: 189%
-Execucao 3: Quantos registros comprimir? Metodo (1-Huffman, 2-LZ77, 3-LZW): LZ77: Original: 25654 bytes | Comprimido: 48486 bytes | Taxa: 189%
-MEDIA (LZ77): 189 %
+Execucao 1: Quantos registros comprimir? Metodo (1-Huffman, 2-LZ77, 3-LZW): LZ77: Original: 25654 bytes | Comprimido: 13865 bytes | Taxa: 54.0462%
+Execucao 2: Quantos registros comprimir? Metodo (1-Huffman, 2-LZ77, 3-LZW): LZ77: Original: 25654 bytes | Comprimido: 13865 bytes | Taxa: 54.0462%
+Execucao 3: Quantos registros comprimir? Metodo (1-Huffman, 2-LZ77, 3-LZW): LZ77: Original: 25654 bytes | Comprimido: 13865 bytes | Taxa: 54.0462%
+MEDIA (LZ77): 54.0462 %
 --------------------------------------------------
 --- Testando LZW ---
-Execucao 1: Quantos registros comprimir? Metodo (1-Huffman, 2-LZ77, 3-LZW): LZW: Original: 25654 bytes | Comprimido: 25759 bytes | Taxa: 100.409%
-Execucao 2: Quantos registros comprimir? Metodo (1-Huffman, 2-LZ77, 3-LZW): LZW: Original: 25654 bytes | Comprimido: 25759 bytes | Taxa: 100.409%
-Execucao 3: Quantos registros comprimir? Metodo (1-Huffman, 2-LZ77, 3-LZW): LZW: Original: 25654 bytes | Comprimido: 25759 bytes | Taxa: 100.409%
-MEDIA (LZW): 100.409 %
+Execucao 1: Quantos registros comprimir? Metodo (1-Huffman, 2-LZ77, 3-LZW): LZW: Original: 25654 bytes | Comprimido: 11466 bytes | Taxa: 44.6948%
+Execucao 2: Quantos registros comprimir? Metodo (1-Huffman, 2-LZ77, 3-LZW): LZW: Original: 25654 bytes | Comprimido: 11466 bytes | Taxa: 44.6948%
+Execucao 3: Quantos registros comprimir? Metodo (1-Huffman, 2-LZ77, 3-LZW): LZW: Original: 25654 bytes | Comprimido: 11466 bytes | Taxa: 44.6948%
+MEDIA (LZW): 44.6948 %
 --------------------------------------------------

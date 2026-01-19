@@ -59,7 +59,6 @@ int main(int argc, char* argv[]) {
 
     int opcao = 0;
     while (true) {
-        cout << "\n=== MENU PARTE 2 ===" << endl;
         cout << "1 - Analise Arvore B (m=20 e m=200)" << endl;
         cout << "2 - Analise Compressao (Huffman, LZ77, LZW)" << endl;
         cout << "3 - Sair" << endl;
