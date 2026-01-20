@@ -32,7 +32,7 @@ void ArvoreB::print() {
 }
 
 void ArvoreB::traverse(NoB* x) {
-    int i;
+    size_t i;
     for (i = 0; i < x->chaves.size(); i++) {
         if (!x->folha) traverse(x->filhos[i]);
         cout << " " << x->chaves[i];
@@ -48,7 +48,7 @@ GameReview* ArvoreB::busca(string k) {
 GameReview* ArvoreB::search(NoB* x, string k) {
     if (x == nullptr) return nullptr;
 
-    int i = 0;
+    size_t i = 0;
     while (i < x->chaves.size() && k > x->chaves[i]) {
         comparacoes++;
         i++;
@@ -74,7 +74,7 @@ void ArvoreB::insere(string k, long long off) {
         raiz->chaves.push_back(k);
         raiz->offsets.push_back(off);
     } else {
-        if (raiz->chaves.size() == 2 * t - 1) {
+        if (raiz->chaves.size() == (size_t)(2 * t - 1)) {
             NoB* s = new NoB(false);
             s->filhos.push_back(raiz);
             splitChild(s, 0);
@@ -128,7 +128,7 @@ void ArvoreB::insertNonFull(NoB* x, string k, long long off) {
     } else {
         while (i >= 0 && x->chaves[i] > k) i--;
         
-        if (x->filhos[i + 1]->chaves.size() == 2 * t - 1) {
+        if (x->filhos[i + 1]->chaves.size() == (size_t)(2 * t - 1)) {
             splitChild(x, i + 1);
             if (x->chaves[i + 1] < k) i++;
         }
